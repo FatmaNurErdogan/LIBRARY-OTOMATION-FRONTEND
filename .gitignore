@@ -1,0 +1,38 @@
+# Node.js bağımlılıkları
+/node_modules
+node_modules/
+
+
+# Derlenmiş dosyalar
+/dist
+/build
+
+# Geçici dosyalar
+*.log
+*.tmp
+*.temp
+
+# Sistem dosyaları
+.DS_Store
+Thumbs.db
+
+# IDE/editör klasörleri
+.vscode/
+.idea/
+
+# Ortam dosyaları
+.env
+.env.*.local
+
+# lock dosyaları
+package-lock.json
+yarn.lock
+
+# npm cache
+.npm/
+
+# test coverage
+/coverage
+
+# Git ile çakışmaması gereken local config dosyaları
+*.local
