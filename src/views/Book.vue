@@ -1,5 +1,5 @@
 <template>
-  <div class="book-page">
+  <div class="book">
     <h1>Library - Book List</h1>
 
     <form @submit.prevent="addBook">
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '../api'; 
 
 export default {
   name: 'BookPage',
@@ -57,12 +57,12 @@ export default {
   },
   methods: {
     fetchBooks() {
-      axios.get('http://localhost:7151/api/book')
+      api.get('/book')
         .then(res => this.books = res.data)
-        .catch(err => console.error(err));
+        .catch(err => console.error('Error fetching the books', err));
     },
     addBook() {
-      axios.post('http://localhost:7151/api/book', this.newBook)
+      api.post('/book', this.newBook)
         .then(() => {
           this.fetchBooks();
           this.newBook = {
@@ -73,12 +73,12 @@ export default {
             stok: 0
           };
         })
-        .catch(err => console.error(err));
+        .catch(err => console.error('Error adding the books', err));
     },
     deleteBook(id) {
-      axios.delete(`http://localhost:7151/api/book/${id}`)
+      api.delete(`/book/${id}`)
         .then(() => this.fetchBooks())
-        .catch(err => console.error(err));
+        .catch(err => console.error('Error deleting the books', err));
     }
   },
   mounted() {
@@ -88,7 +88,7 @@ export default {
 </script>
 
 <style scoped>
-.book-page {
+.book {
   padding: 20px;
 }
 form input {

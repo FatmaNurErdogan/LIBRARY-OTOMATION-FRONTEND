@@ -1,40 +1,30 @@
 <template>
   <div id="app">
-    <header>
-      <nav>
-        <div class="left">
-        <router-link to="/">
-          Home Page
-        </router-link>
-        </div>
-        <div class="right">
-        <router-link to="/register">
-          Register
-        </router-link>
-        <router-link to="/logIn">
-          Log In
-        </router-link>
-        
-        </div>
-      </nav>
-    </header>
-     <main>
+    <Header />
+    <div class="content-wrapper">
+      <Sidebar />
       <router-view></router-view>
-    </main>
+    </div>
   </div>
 </template>
+
 <script>
-export default{
-  name:'App'
-}
+import Header from "./components/Header.vue";
+import Sidebar from "./components/Sidebar.vue";
+
+export default {
+  name: "App",
+  components: {
+    Header,
+    Sidebar
+  }
+};
 </script>
-<style scoped>
-  nav{
-    margin: 20px;
-  }
-  nav a{
-    margin: 0 10px;
-    text-decoration: wavy;
-    color:darkblue;
-  }
+
+<style>
+.content-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
 </style>
+
