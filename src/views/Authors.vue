@@ -3,7 +3,9 @@
     <h1>Author List</h1>
 
     <form @submit.prevent="addAuthor">
-      <input v-model="newAuthor.name" placeholder="Author Name" required />
+      <input v-model="author.name" placeholder="Name" required />
+      <input v-model="author.biography" placeholder="Biography" />
+      <input v-model="author.birthYear" placeholder="Birth Year" />
       <button type="submit">Add Author</button>
     </form>
 
@@ -12,14 +14,20 @@
         <tr>
           <th>ID</th>
           <th>Name</th>
-          <th>Delete</th>
+          <th>Biography</th>
+          <th>Birth Year</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="author in authors" :key="author.authorID">
-          <td>{{ author.authorID }}</td>
-          <td>{{ author.name }}</td>
-          <td><button @click="deleteAuthor(author.authorID)">Delete</button></td>
+        <tr v-for="item in authors" :key="item.authorID">
+          <td>{{ item.authorID }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.biography }}</td>
+          <td>{{ item.birthYear }}</td>
+          <td>
+            <button @click="deleteAuthor(item.authorID)">Delete</button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -34,29 +42,34 @@ export default {
   data() {
     return {
       authors: [],
-      newAuthor: {
-        name: ''
+      author: {
+        name: '',
+        biography: '',
+        birthYear: ''
       }
     };
   },
   methods: {
     fetchAuthors() {
-      axios.get('http://localhost:7151/api/author')
-        .then(res => this.authors = res.data)
-        .catch(err => console.error(err));
+      axios.get('http://localhost:5283/api/author')
+        .then(res => {
+          console.log('Veriler geldi:', res.data);
+          this.authors = res.data;
+        })
+        .catch(err => console.error('Fetch Error:', err));
     },
     addAuthor() {
-      axios.post('http://localhost:7151/api/author', this.newAuthor)
+      axios.post('http://localhost:5283/api/author', this.author)
         .then(() => {
           this.fetchAuthors();
-          this.newAuthor.name = '';
+          this.author = { name: '', biography: '', birthYear: '' };
         })
-        .catch(err => console.error(err));
+        .catch(err => console.error('Add Error:', err));
     },
     deleteAuthor(id) {
-      axios.delete(`http://localhost:7151/api/author/${id}`)
+      axios.delete(`http://localhost:5283/api/author/${id}`)
         .then(() => this.fetchAuthors())
-        .catch(err => console.error(err));
+        .catch(err => console.error('Delete Error:', err));
     }
   },
   mounted() {
@@ -73,6 +86,10 @@ form input {
   margin: 5px;
   padding: 5px;
 }
+button {
+  margin: 5px;
+  padding: 5px 10px;
+}
 table {
   margin-top: 20px;
   width: 100%;
@@ -81,5 +98,6 @@ table {
 th, td {
   padding: 10px;
   border: 1px solid #ddd;
+  text-align: left;
 }
 </style>

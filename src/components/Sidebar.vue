@@ -4,12 +4,15 @@
     <div v-if="isSidebarOpen" class="links">
       <router-link to="/books">Books</router-link>
       <router-link to="/users">Users</router-link>
+      <router-link to="/authors">Authors</router-link>
+      <router-link to="/borroweds">Borroweds</router-link>
       
     </div>
   </div>
 </template>
 
 <script>
+
 export default {
   name: "AppSidebar",
   data() {
