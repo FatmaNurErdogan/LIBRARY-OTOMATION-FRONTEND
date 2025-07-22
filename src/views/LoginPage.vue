@@ -14,34 +14,46 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import api from '../api';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import api from '../api'
 
 export default {
   name: 'LoginPage',
   setup() {
-    const username = ref('');
-    const password = ref('');
-    const router = useRouter();
+    const username = ref('')
+    const password = ref('')
+    const router = useRouter()
 
     const handleLogin = async () => {
       try {
         const response = await api.post('/UserLogin/Login', {
-          username: username.value,
-          password: password.value,
-        });
-        localStorage.setItem('token', response.data.token);
-        router.push('/');
+          userName: username.value,
+          password: password.value
+        })
+
+        const token = response.data.token || response.data.Token
+        const user = response.data.user || {
+          userName: username.value
+        }
+
+      
+        localStorage.setItem('token', token)
+        localStorage.setItem('user', JSON.stringify(user))
+
+    
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+
+        router.push('/')
       } catch (error) {
-        alert('Login failed');
+        alert('Login failed. Please check your credentials.')
+        console.error(error)
       }
-    };
+    }
 
-    return { username, password, handleLogin };
+    return { username, password, handleLogin }
   }
-}; 
-
+}
 </script>
 
 <style scoped>
@@ -51,7 +63,7 @@ export default {
   align-items: center;
   min-height: 100vh;
   width: 100%;
-  background-color: #98a3ac; 
+  background-color: #98a3ac;
 }
 
 .login-box {
@@ -92,6 +104,8 @@ export default {
   cursor: pointer;
 }
 </style>
+
+
 
 
 

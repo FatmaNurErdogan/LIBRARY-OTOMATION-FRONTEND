@@ -4,8 +4,13 @@
       <router-link to="/" class="homePage">Home Page</router-link>
     </div>
     <div class="sağ">
-      <button @click="goToRegister">Register</button>
-      <button @click="goToLogIn">LogIn</button>
+      <template v-if="!isLoggedIn">
+        <button @click="goToRegister">Register</button>
+        <button @click="goToLogIn">LogIn</button>
+      </template>
+      <template v-else>
+        <button @click="logout">LogOut</button>
+      </template>
     </div>
   </header>
 </template>
@@ -13,12 +18,18 @@
 <script>
 export default {
   name: "AppHeader",
+  props: {
+    isLoggedIn: Boolean
+  },
   methods: {
     goToRegister() {
       this.$router.push("/register");
     },
     goToLogIn() {
       this.$router.push("/login");
+    },
+    logout() {
+      this.$emit("logout"); 
     }
   }
 };

@@ -2,12 +2,13 @@
   <div class="borrowed-books">
     <h2>Borrowed Books</h2>
 
-    <form @submit.prevent="addBorrowed">
-      <input v-model="newBorrowed.userId" type="number" placeholder="User ID" required />
-      <input v-model="newBorrowed.bookId" type="number" placeholder="Book ID" required />
-      <input v-model="newBorrowed.borrowDate" type="date" required />
-      <input v-model="newBorrowed.returnDate" type="date" required />
-      <button type="submit">Add Borrowed</button>
+    <form @submit.prevent="editingID ? updateBorrowed() : addBorrowed()">
+      <input v-model="form.userId" type="number" placeholder="User ID" required />
+      <input v-model="form.bookId" type="number" placeholder="Book ID" required />
+      <input v-model="form.borrowDate" type="date" required />
+      <input v-model="form.returnDate" type="date" required />
+      <button type="submit">{{ editingID ? 'Update Borrowed' : 'Add Borrowed' }}</button>
+      <button v-if="editingID" type="button" @click="cancelEdit">Cancel</button>
     </form>
 
     <table>
@@ -29,6 +30,7 @@
           <td>{{ item.borrowDate }}</td>
           <td>{{ item.returnDate }}</td>
           <td>
+            <button @click="editBorrowed(item)">Edit</button>
             <button @click="deleteBorrowed(item.borrowedID)">Delete</button>
           </td>
         </tr>
@@ -45,42 +47,81 @@ export default {
   data() {
     return {
       borrowedList: [],
-      newBorrowed: {
+      form: {
         userId: '',
         bookId: '',
         borrowDate: '',
         returnDate: ''
-      }
-    }
+      },
+      editingID: null
+    };
   },
   methods: {
     fetchBorrowed() {
-      axios.get('http://localhost:5283/api/borrowed')
-        .then(res => {
-          this.borrowedList = res.data;
-        })
-        .catch(err => console.error('Fetch error:', err));
+      const token = localStorage.getItem('token');
+      axios.get('http://localhost:5283/api/borrowed', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(res => this.borrowedList = res.data)
+      .catch(err => console.error('Fetch error:', err));
     },
+
     addBorrowed() {
-      axios.post('http://localhost:5283/api/borrowed', this.newBorrowed)
-        .then(() => {
-          this.fetchBorrowed();
-          this.newBorrowed = { userId: '', bookId: '', borrowDate: '', returnDate: '' };
-        })
-        .catch(err => console.error('Add error:', err));
+      const token = localStorage.getItem('token');
+      axios.post('http://localhost:5283/api/borrowed', this.form, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(() => {
+        this.fetchBorrowed();
+        this.resetForm();
+      })
+      .catch(err => console.error('Add error:', err));
     },
+
+    editBorrowed(borrowed) {
+      this.form = { ...borrowed };
+      this.editingID = borrowed.borrowedID;
+    },
+
+    updateBorrowed() {
+      const token = localStorage.getItem('token');
+      axios.put(`http://localhost:5283/api/borrowed/${this.editingID}`, this.form, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(() => {
+        this.fetchBorrowed();
+        this.resetForm();
+      })
+      .catch(err => console.error('Update error:', err));
+    },
+
     deleteBorrowed(id) {
-      axios.delete(`http://localhost:5283/api/borrowed/${id}`)
-        .then(() => {
-          this.fetchBorrowed();
-        })
-        .catch(err => console.error('Delete error:', err));
+      const token = localStorage.getItem('token');
+      axios.delete(`http://localhost:5283/api/borrowed/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(() => this.fetchBorrowed())
+      .catch(err => console.error('Delete error:', err));
+    },
+
+    cancelEdit() {
+      this.resetForm();
+    },
+
+    resetForm() {
+      this.form = {
+        userId: '',
+        bookId: '',
+        borrowDate: '',
+        returnDate: ''
+      };
+      this.editingID = null;
     }
   },
   mounted() {
     this.fetchBorrowed();
   }
-}
+};
 </script>
 
 <style scoped>
@@ -104,4 +145,10 @@ input {
   margin-right: 10px;
   padding: 5px;
 }
+button {
+  margin: 5px 5px 0 0;
+  padding: 5px 10px;
+}
 </style>
+
+

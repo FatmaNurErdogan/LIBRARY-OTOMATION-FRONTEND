@@ -13,7 +13,7 @@
         <input type="email" v-model="form.email" required />
 
         <label for="username">Username</label>
-        <input type="text" v-model="form.userName" required />
+        <input type="text" v-model="form.username" required />
 
         <label for="password">Password</label>
         <input type="password" v-model="form.password" required />
@@ -37,7 +37,7 @@ export default {
         name: '',
         lastname: '',
         email: '',
-        userName: '',
+        username: '',
         password: ''
       },
       errorMessage: ''

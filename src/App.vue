@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <Header />
+    <Header :isLoggedIn="isLoggedIn" @logout="handleLogout" />
     <div class="content-wrapper">
-      <Sidebar />
+      <Sidebar v-if="isLoggedIn" />
       <router-view></router-view>
     </div>
   </div>
@@ -17,6 +17,29 @@ export default {
   components: {
     Header,
     Sidebar
+  },
+  data() {
+    return {
+      isLoggedIn: false
+    };
+  },
+  created() {
+    this.checkLoginStatus();
+  },
+  methods: {
+    checkLoginStatus() {
+      this.isLoggedIn = !!localStorage.getItem('token');
+    },
+    handleLogout() {
+      localStorage.removeItem('token');
+      this.checkLoginStatus();
+      this.$router.push('/login');
+    }
+  },
+  watch: {
+    $route() {
+      this.checkLoginStatus();
+    }
   }
 };
 </script>
@@ -27,4 +50,6 @@ export default {
   min-height: 100vh;
 }
 </style>
+
+
 

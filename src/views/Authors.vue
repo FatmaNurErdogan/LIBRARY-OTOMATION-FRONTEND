@@ -2,11 +2,12 @@
   <div class="author-page">
     <h1>Author List</h1>
 
-    <form @submit.prevent="addAuthor">
-      <input v-model="author.name" placeholder="Name" required />
-      <input v-model="author.biography" placeholder="Biography" />
-      <input v-model="author.birthYear" placeholder="Birth Year" />
-      <button type="submit">Add Author</button>
+    <form @submit.prevent="editingAuthorID ? updateAuthor() : addAuthor()">
+      <input v-model="form.name" placeholder="Name" required />
+      <input v-model="form.biography" placeholder="Biography" />
+      <input v-model="form.birthYear" placeholder="Birth Year" />
+      <button type="submit">{{ editingAuthorID ? 'Update Author' : 'Add Author' }}</button>
+      <button v-if="editingAuthorID" type="button" @click="cancelEdit">Cancel</button>
     </form>
 
     <table>
@@ -26,6 +27,7 @@
           <td>{{ item.biography }}</td>
           <td>{{ item.birthYear }}</td>
           <td>
+            <button @click="editAuthor(item)">Edit</button>
             <button @click="deleteAuthor(item.authorID)">Delete</button>
           </td>
         </tr>
@@ -42,34 +44,67 @@ export default {
   data() {
     return {
       authors: [],
-      author: {
+      form: {
         name: '',
         biography: '',
         birthYear: ''
-      }
+      },
+      editingAuthorID: null
     };
   },
   methods: {
     fetchAuthors() {
-      axios.get('http://localhost:5283/api/author')
-        .then(res => {
-          console.log('Veriler geldi:', res.data);
-          this.authors = res.data;
-        })
-        .catch(err => console.error('Fetch Error:', err));
+      const token = localStorage.getItem('token');
+      axios.get('http://localhost:5283/api/author', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(res => this.authors = res.data)
+      .catch(err => console.error('Fetch Error:', err));
     },
     addAuthor() {
-      axios.post('http://localhost:5283/api/author', this.author)
-        .then(() => {
-          this.fetchAuthors();
-          this.author = { name: '', biography: '', birthYear: '' };
-        })
-        .catch(err => console.error('Add Error:', err));
+      const token = localStorage.getItem('token');
+      axios.post('http://localhost:5283/api/author', this.form, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(() => {
+        this.fetchAuthors();
+        this.resetForm();
+      })
+      .catch(err => console.error('Add Error:', err));
+    },
+    editAuthor(author) {
+      this.form = { ...author };
+      this.editingAuthorID = author.authorID;
+    },
+    updateAuthor() {
+      const token = localStorage.getItem('token');
+      axios.put(`http://localhost:5283/api/author/${this.editingAuthorID}`, this.form, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(() => {
+        this.fetchAuthors();
+        this.resetForm();
+      })
+      .catch(err => console.error('Update Error:', err));
     },
     deleteAuthor(id) {
-      axios.delete(`http://localhost:5283/api/author/${id}`)
-        .then(() => this.fetchAuthors())
-        .catch(err => console.error('Delete Error:', err));
+      const token = localStorage.getItem('token');
+      axios.delete(`http://localhost:5283/api/author/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(() => this.fetchAuthors())
+      .catch(err => console.error('Delete Error:', err));
+    },
+    cancelEdit() {
+      this.resetForm();
+    },
+    resetForm() {
+      this.form = {
+        name: '',
+        biography: '',
+        birthYear: ''
+      };
+      this.editingAuthorID = null;
     }
   },
   mounted() {
@@ -86,7 +121,7 @@ form input {
   margin: 5px;
   padding: 5px;
 }
-button {
+form button {
   margin: 5px;
   padding: 5px 10px;
 }
@@ -101,3 +136,4 @@ th, td {
   text-align: left;
 }
 </style>
+
