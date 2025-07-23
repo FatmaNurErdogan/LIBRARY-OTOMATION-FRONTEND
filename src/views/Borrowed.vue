@@ -2,7 +2,7 @@
   <div class="borrowed-books">
     <h2>Borrowed Books</h2>
 
-    <form @submit.prevent="editingID ? updateBorrowed() : addBorrowed()">
+    <form v-if="isAdmin" @submit.prevent="editingID ? updateBorrowed() : addBorrowed()">
       <input v-model="form.userId" type="number" placeholder="User ID" required />
       <input v-model="form.bookId" type="number" placeholder="Book ID" required />
       <input v-model="form.borrowDate" type="date" required />
@@ -30,8 +30,10 @@
           <td>{{ item.borrowDate }}</td>
           <td>{{ item.returnDate }}</td>
           <td>
-            <button @click="editBorrowed(item)">Edit</button>
-            <button @click="deleteBorrowed(item.borrowedID)">Delete</button>
+            <div v-if="isAdmin">
+              <button @click="editBorrowed(item)">Edit</button>
+              <button @click="deleteBorrowed(item.borrowedID)">Delete</button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -53,7 +55,8 @@ export default {
         borrowDate: '',
         returnDate: ''
       },
-      editingID: null
+      editingID: null,
+      isAdmin: false
     };
   },
   methods: {
@@ -65,7 +68,6 @@ export default {
       .then(res => this.borrowedList = res.data)
       .catch(err => console.error('Fetch error:', err));
     },
-
     addBorrowed() {
       const token = localStorage.getItem('token');
       axios.post('http://localhost:5283/api/borrowed', this.form, {
@@ -77,12 +79,10 @@ export default {
       })
       .catch(err => console.error('Add error:', err));
     },
-
     editBorrowed(borrowed) {
       this.form = { ...borrowed };
       this.editingID = borrowed.borrowedID;
     },
-
     updateBorrowed() {
       const token = localStorage.getItem('token');
       axios.put(`http://localhost:5283/api/borrowed/${this.editingID}`, this.form, {
@@ -94,7 +94,6 @@ export default {
       })
       .catch(err => console.error('Update error:', err));
     },
-
     deleteBorrowed(id) {
       const token = localStorage.getItem('token');
       axios.delete(`http://localhost:5283/api/borrowed/${id}`, {
@@ -103,11 +102,9 @@ export default {
       .then(() => this.fetchBorrowed())
       .catch(err => console.error('Delete error:', err));
     },
-
     cancelEdit() {
       this.resetForm();
     },
-
     resetForm() {
       this.form = {
         userId: '',
@@ -116,9 +113,14 @@ export default {
         returnDate: ''
       };
       this.editingID = null;
+    },
+    checkAdmin() {
+      const user = JSON.parse(localStorage.getItem('user'));
+      this.isAdmin = user && user.userID === 1;
     }
   },
   mounted() {
+    this.checkAdmin();
     this.fetchBorrowed();
   }
 };
@@ -150,5 +152,4 @@ button {
   padding: 5px 10px;
 }
 </style>
-
 

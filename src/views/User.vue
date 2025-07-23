@@ -1,7 +1,8 @@
 <template>
   <div class="user">
     <h1>Library - User List</h1>
-    <form @submit.prevent="editingUserID ? updateUser() : addUser()">
+
+    <form v-if="isAdmin" @submit.prevent="editingUserID ? updateUser() : addUser()">
       <input v-model="form.userID" placeholder="User ID" required />
       <input v-model="form.name" placeholder="Name" />
       <input v-model="form.lastname" placeholder="Lastname" />
@@ -35,8 +36,10 @@
           <td>{{ user.userName }}</td>
           <td>{{ user.password }}</td>
           <td>
-            <button @click="editUser(user)">Edit</button>
-            <button @click="deleteUser(user.userID)">Delete</button>
+            <div v-if="isAdmin">
+              <button @click="editUser(user)">Edit</button>
+              <button @click="deleteUser(user.userID)">Delete</button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -61,6 +64,7 @@ export default {
         password: '',
       },
       editingUserID: null,
+      isAdmin: false
     }
   },
   methods: {
@@ -108,9 +112,14 @@ export default {
         userName: '',
         password: '',
       };
+    },
+    checkAdmin() {
+      const user = JSON.parse(localStorage.getItem('user'));
+      this.isAdmin = user && user.userID === 1;
     }
   },
   mounted() {
+    this.checkAdmin();
     this.fetchUsers();
   }
 }

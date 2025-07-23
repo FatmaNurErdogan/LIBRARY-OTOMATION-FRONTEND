@@ -2,7 +2,7 @@
   <div :class="['sidebar', { closed: !isSidebarOpen }]">
     <button class="toggle" @click="toggleSidebar">☰</button>
 
-    <!-- Giriş yapan kullanıcı adı (isim) -->
+
     <div v-if="isSidebarOpen && fullName" class="welcome-message">
       <i class="fas fa-user-circle"></i>
       <span>Hello {{ fullName }}</span>
@@ -41,7 +41,7 @@ export default {
   mounted() {
     const user = JSON.parse(localStorage.getItem('user'));
     if (user) {
-      // İsim + soyisim varsa birleştirerek göster, yoksa sadece name göster
+  
       this.fullName = user.name
         ? user.lastname
           ? `${user.name} ${user.lastname}`
@@ -51,7 +51,7 @@ export default {
   },
   methods: {
     toggleSidebar() {
-      this.isSidebarOpen = !this.isSidebarOpen;
+      this.isSidebarOpen = !this.isSidebarOpen;   //açıp kapatmak için
     }
   }
 };

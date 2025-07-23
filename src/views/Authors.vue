@@ -2,7 +2,8 @@
   <div class="author-page">
     <h1>Author List</h1>
 
-    <form @submit.prevent="editingAuthorID ? updateAuthor() : addAuthor()">
+    <!-- formu sadece benim görmem için -->
+    <form v-if="isAdmin" @submit.prevent="editingAuthorID ? updateAuthor() : addAuthor()">
       <input v-model="form.name" placeholder="Name" required />
       <input v-model="form.biography" placeholder="Biography" />
       <input v-model="form.birthYear" placeholder="Birth Year" />
@@ -21,14 +22,18 @@
         </tr>
       </thead>
       <tbody>
+        <!-- for loop database den gelen arrayleri tabloya dönüştürdük -->
         <tr v-for="item in authors" :key="item.authorID">
           <td>{{ item.authorID }}</td>
           <td>{{ item.name }}</td>
           <td>{{ item.biography }}</td>
           <td>{{ item.birthYear }}</td>
           <td>
-            <button @click="editAuthor(item)">Edit</button>
-            <button @click="deleteAuthor(item.authorID)">Delete</button>
+
+            <div v-if="isAdmin">
+              <button @click="editAuthor(item)">Edit</button>
+              <button @click="deleteAuthor(item.authorID)">Delete</button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -49,7 +54,8 @@ export default {
         biography: '',
         birthYear: ''
       },
-      editingAuthorID: null
+      editingAuthorID: null,
+      isAdmin: false
     };
   },
   methods: {
@@ -74,7 +80,7 @@ export default {
     },
     editAuthor(author) {
       this.form = { ...author };
-      this.editingAuthorID = author.authorID;
+      this.editingAuthorID = author.authorID;   //güncelleme
     },
     updateAuthor() {
       const token = localStorage.getItem('token');
@@ -105,9 +111,14 @@ export default {
         birthYear: ''
       };
       this.editingAuthorID = null;
+    },
+    checkAdmin() {
+      const user = JSON.parse(localStorage.getItem('user'));
+      this.isAdmin = user && user.userID === 1;
     }
   },
   mounted() {
+    this.checkAdmin();
     this.fetchAuthors();
   }
 };
@@ -115,10 +126,10 @@ export default {
 
 <style scoped>
 .author-page {
-  padding: 20px;
+  padding: 80px;
 }
 form input {
-  margin: 5px;
+  margin: 10px;
   padding: 5px;
 }
 form button {

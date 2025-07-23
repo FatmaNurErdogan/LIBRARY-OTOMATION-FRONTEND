@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref } from 'vue'  //reaktif
 import { useRouter } from 'vue-router'
 import api from '../api'
 

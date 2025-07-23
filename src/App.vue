@@ -38,7 +38,7 @@ export default {
   },
   watch: {
     $route() {
-      this.checkLoginStatus();
+      this.checkLoginStatus();     // Kontrol eder. Sayfa yenilense bile eğer giriş yapıldıysa öyle kalır.
     }
   }
 };
