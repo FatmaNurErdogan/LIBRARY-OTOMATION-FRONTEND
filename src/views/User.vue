@@ -34,7 +34,10 @@
           <td>{{ user.lastname }}</td>
           <td>{{ user.email }}</td>
           <td>{{ user.userName }}</td>
-          <td>{{ user.password }}</td>
+          <td>
+            <span v-if="isAdmin">{{ user.password }}</span>
+            <span v-else>****</span>
+          </td>
           <td>
             <div v-if="isAdmin">
               <button @click="editUser(user)">Edit</button>
@@ -115,7 +118,7 @@ export default {
     },
     checkAdmin() {
       const user = JSON.parse(localStorage.getItem('user'));
-      this.isAdmin = user && user.userID === 1;
+      this.isAdmin = user && user.userID === 1; // sadece ID 1 olan şifreleri görür
     }
   },
   mounted() {
