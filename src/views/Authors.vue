@@ -79,7 +79,7 @@ export default {
       .catch(err => console.error('Add Error:', err));
     },
     editAuthor(author) {
-      this.form = { ...author };
+      this.form = { ...author };  //sprea operatoru ile nesneyi this.forma aktarıyor
       this.editingAuthorID = author.authorID;   //güncelleme
     },
     updateAuthor() {

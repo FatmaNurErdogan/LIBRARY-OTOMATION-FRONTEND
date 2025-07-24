@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'  //reaktif
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '../api'
 
@@ -33,17 +33,18 @@ export default {
         })
 
         const token = response.data.token || response.data.Token
-        const user = response.data.user || {
-          userName: username.value
+        const user = response.data.user
+
+        if (user) {
+          const shortUser = {
+            userID: user.userID,
+            userName: user.userName
+          }
+          localStorage.setItem('user', JSON.stringify(shortUser))
         }
 
-      
         localStorage.setItem('token', token)
-        localStorage.setItem('user', JSON.stringify(user))
-
-    
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-
         router.push('/')
       } catch (error) {
         alert('Login failed. Please check your credentials.')
@@ -65,7 +66,6 @@ export default {
   width: 100%;
   background-color: #98a3ac;
 }
-
 .login-box {
   background-color: white;
   padding: 30px 40px;
@@ -73,18 +73,15 @@ export default {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   width: 350px;
 }
-
 .login-box h2 {
   text-align: center;
   margin-bottom: 20px;
 }
-
 .login-box label {
   display: block;
   margin-top: 10px;
   font-weight: bold;
 }
-
 .login-box input {
   width: 100%;
   padding: 10px;
@@ -92,7 +89,6 @@ export default {
   border-radius: 5px;
   border: 1px solid #ccc;
 }
-
 .login-box button {
   width: 100%;
   margin-top: 20px;
@@ -104,6 +100,11 @@ export default {
   cursor: pointer;
 }
 </style>
+
+
+
+
+
 
 
 

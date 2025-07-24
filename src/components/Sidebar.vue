@@ -2,10 +2,9 @@
   <div :class="['sidebar', { closed: !isSidebarOpen }]">
     <button class="toggle" @click="toggleSidebar">☰</button>
 
-
-    <div v-if="isSidebarOpen && fullName" class="welcome-message">
+    <div v-if="isSidebarOpen && userName" class="welcome-message">
       <i class="fas fa-user-circle"></i>
-      <span>Hello {{ fullName }}</span>
+      <span>Hello {{ userName }}</span>
     </div>
 
     <div class="links">
@@ -35,23 +34,18 @@ export default {
   data() {
     return {
       isSidebarOpen: true,
-      fullName: ''
+      userName: ''
     };
   },
   mounted() {
     const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-  
-      this.fullName = user.name
-        ? user.lastname
-          ? `${user.name} ${user.lastname}`
-          : user.name
-        : '';
+    if (user && user.userName) {
+      this.userName = user.userName;
     }
   },
   methods: {
     toggleSidebar() {
-      this.isSidebarOpen = !this.isSidebarOpen;   //açıp kapatmak için
+      this.isSidebarOpen = !this.isSidebarOpen;
     }
   }
 };
@@ -86,10 +80,6 @@ export default {
   margin-bottom: 20px;
   padding-left: 10px;
 }
-.welcome-message i {
-  font-size: 22px;
-  color: white;
-}
 .links {
   display: flex;
   flex-direction: column;
@@ -119,5 +109,6 @@ export default {
   font-size: 18px;
 }
 </style>
+
 
 
